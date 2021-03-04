@@ -5,20 +5,22 @@ let aviso = document.querySelector('.d-2');
 let lateral = document.querySelector('.d-1-right');
 let numeros = document.querySelector('.d-1-3');
 
-let etapaAtual = 0;
-let numero ='';
-let votoBranco = false;
 
-function comecarEtapa(){
+let etapaAtual = 0;
+let numero = '';
+let votoBranco = false;
+let votos = [];
+
+function comecarEtapa() {
     let etapa = etapas[etapaAtual];
 
     let numeroHtml = '';
     numero = '';
     votoBranco = false;
 
-    for(let i=0;i<etapa.numeros;i++){
-        if(i === 0){
-        numeroHtml += '<div class="numero pisca"></div>';
+    for(let i=0;i<etapa.numeros;i++) {
+        if(i === 0) {
+            numeroHtml += '<div class="numero pisca"></div>';
         } else {
             numeroHtml += '<div class="numero"></div>';
         }
@@ -29,9 +31,8 @@ function comecarEtapa(){
     descricao.innerHTML = '';
     aviso.style.display = 'none';
     lateral.innerHTML = '';
-    numeros.innerHTML = numeroHtml; 
+    numeros.innerHTML = numeroHtml;
 }
-
 function atualizaInterface() {
     let etapa = etapas[etapaAtual];
     let candidato = etapa.candidatos.filter((item)=>{
@@ -41,7 +42,6 @@ function atualizaInterface() {
             return false;
         }
     });
-
     if(candidato.length > 0) {
         candidato = candidato[0];
         seuVotoPara.style.display = 'block';
@@ -77,34 +77,45 @@ function clicou(n) {
         }
     }
 }
-function branco(){
-    if(numero === ''){
-        votoBranco = true;
-        seuVotoPara.style.display = 'block';
-        aviso.style.display = 'block';
-        numeros.innerHTML = '';
-        descricao.innerHTML = '<div class="aviso--grande pisca">VOTO EM BRANCO</div>';
-        lateral.innerHTML ='';
-    } else {
-        alert(" Para votar em branco favor não digitar nenhum número!");
-    }
+function branco() {
+    numero = '';
+    votoBranco = true;
+
+    seuVotoPara.style.display = 'block';
+    aviso.style.display = 'block';
+    numeros.innerHTML = '';
+    descricao.innerHTML = '<div class="aviso--grande pisca">VOTO EM BRANCO</div>';
+    lateral.innerHTML = '';
 }
-function corrige(){
+function corrige() {
     comecarEtapa();
-    let votoConfirmado = false;
 }
-function confirma(){
-    if(votoBranco == true) {
-        let votoConfirmado = true;
-    } else if(numero.lenght === etapa.numeros) {
-        let votoConfirmado = true;
+function confirma() {
+    let etapa = etapas[etapaAtual];
+
+    let votoConfirmado = false;
+
+    if(votoBranco === true) {
+        votoConfirmado = true;
+        votos.push({
+            etapa: etapas[etapaAtual].titulo,
+            voto: 'branco'
+        });
+    } else if(numero.length === etapa.numeros) {
+        votoConfirmado = true;
+        votos.push({
+            etapa: etapas[etapaAtual].titulo,
+            voto: numero
+        });
     }
-    if(votoConfirmado){
+
+    if(votoConfirmado) {
         etapaAtual++;
-        if(etapas[etapaAtual] !== undefined){
+        if(etapas[etapaAtual] !== undefined) {
             comecarEtapa();
         } else {
-            
+            document.querySelector('.tela').innerHTML = '<div class="aviso--gigante pisca">FIM</div>';
+            console.log(votos);
         }
     }
 }
